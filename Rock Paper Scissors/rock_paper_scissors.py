@@ -1,30 +1,24 @@
 # [a,b] a = computer, b = user
 # 0 = rock, 1 = paper , 2 = scissors
-
 import random
-
 def rock():
     print("\nRock selected")
     global options
     options[1]=0
 #end procedure
-
 def paper():
     print("\nPaper selected")
     global options
     options[1]=1
 #end procedure
-
 def scissors():
     print("\nScissors selected")
     global options
     options[1]=2
 #end procedure
-
 def tie():
     print("It's a tie!")
-#end procedure
-    
+#end procedure    
 def not_tie():
     global user_win
     {
@@ -32,27 +26,21 @@ def not_tie():
     False: computer_win_f,
     }[user_win]()
 #end procedure
-
 def user_win_f():
     print("User Wins!")
 #end procedure
-
 def computer_win_f():
     print("Computer Wins!")
 #end procedure
-
 def computer_rock():
     print("Computer picks rock")
 #end procedure
-
 def computer_paper():
     print("Computer picks paper")
 #end procedure
-
 def computer_scissors():
     print("Computer picks scissors")
 #end procedure
-
 
 options = ["",""]
 tie_combos = [[0, 0],[1, 1],[2, 2]]
