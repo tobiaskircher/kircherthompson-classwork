@@ -1,3 +1,6 @@
+### SRC - I like this solution too.
+### But, I don't like globals!
+
 # [a,b] a = computer, b = user
 # 0 = rock, 1 = paper , 2 = scissors
 import random

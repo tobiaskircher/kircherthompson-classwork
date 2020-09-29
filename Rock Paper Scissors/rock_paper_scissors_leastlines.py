@@ -1,3 +1,6 @@
+### SRC - This is a great effort!
+### But, too many ifs and I don't like
+### Multiple assignments!
 import random
 while input("\nPlay Rock Paper Scissors? [Y/N]").lower()=="y":
     try:
