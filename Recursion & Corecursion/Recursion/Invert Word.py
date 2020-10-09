@@ -1,11 +1,17 @@
-def flip_word(word):
-    n = len(word)
-    if n == 1:
-        return word[0]
-    else:
-        return flip_word(word[1:]) + word[0]
+def rec_func(input_value):
+  item = input_value[0]
+  if len(input_value) == 1:
+    return item
+  else:
+    return rec_func(input_value[1:]) + item
+  #endif
+  stack.pop(len(stack)-1)
+  print(stack)
+#end function
 
+print("Star:")
+print(rec_func('star'))
 
-word = input("Word:") 
-print("\nWord Reversed:")
-print(flip_word(word))
+print("\nNumbers:")
+print(rec_func((1,2,3,4)))
+
