@@ -1,3 +1,5 @@
+### SRC - This is a good start, but try and get the sun to move
+### in an arc.
 import pygame
 # -- Global Constants
 # -- Colours
@@ -17,7 +19,8 @@ done = False
 sun_x = 40
 sun_y = 0
 # -- Manages how fast screen refreshes
-clock = pygame.time.Clock()
+clock = pygame.time.Clock()
+
 ### -- Game Loop
 while not done:
     # -- User input and controls
