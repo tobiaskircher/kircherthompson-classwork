@@ -35,10 +35,11 @@ while not done:
         screen.fill((19, 59, 128))
         
     # -- Draw here
-    pygame.draw.rect(screen, BLUE, (220,330,200,150))#165
+    pygame.draw.rect(screen, BLUE, (220,330,200,150))
     pygame.draw.rect(screen, (189, 191, 187), (250,380,60,60))
     pygame.draw.rect(screen, (105, 88, 42), (340,380,50,100))
     pygame.draw.circle(screen, YELLOW, (sun_x,sun_y),40,0)
+    pygame.draw.polygon(screen, BLACK, ((200,330),(320,250),(440,330)))
     # -- flip display to reveal new position of objects
     pygame.display.flip()
     # - The clock ticks over
@@ -49,6 +50,7 @@ while not done:
         sun_y=100
     else:
         sun_x = sun_x + 1
-S
+        sun_y = int((3/5120)*sun_x**2 - (3/8)*sun_x + 100)
+
 #End While - End of game loop
 pygame.quit()
