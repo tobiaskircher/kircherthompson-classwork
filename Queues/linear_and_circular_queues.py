@@ -87,12 +87,13 @@ isfull ==> returns if queue is empty or not
 showqueue ==> returns queue
 size ==> returns current size of queue
 debug ==> returns information about queue and the array it is in
-end ==> ends the program
-commands ==> shows this list of commands''')
+commands ==> shows this list of commands
+end ==> ends the program''')
     return ''
     
 print("\nQUEUES v1, Type 'commands' For List Of Commands")
 
+valid = T
 queue1 = linearQueue(int(input("\nInitialise Queue Length:")))
 
 commands_dic = {
