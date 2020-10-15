@@ -61,7 +61,7 @@ class linearQueue():
     def debugQueue(self):
         print("="*20)
         print("INFO:")
-        print("The Array:",self.queue)
+        print("The List:",self.queue)
         print("Front Pointer:",self.front)
         print("Rear Pointer:", self.rear)
         tempQueue = []
@@ -73,9 +73,6 @@ class linearQueue():
         print("isEmpty():",self.isEmpty())
         print("isFull():",self.isFull())
         return ("="*20)
-
-def end():
-    exit()
 
 def list_of_commands():
     print('''List Of Commands:
@@ -90,11 +87,17 @@ debug ==> returns information about queue and the array it is in
 commands ==> shows this list of commands
 end ==> ends the program''')
     return ''
-    
+
+#User Interface
+
 print("\nQUEUES v1, Type 'commands' For List Of Commands")
 
-valid = T
-queue1 = linearQueue(int(input("\nInitialise Queue Length:")))
+valid = False
+while not valid:
+    try:
+        queue1 = linearQueue(int(input("\nInitialise Queue Length:")))
+        valid = True
+    except: print("\nPlease input an integer.")
 
 commands_dic = {
     "enqueue": queue1.enQueue,
@@ -104,12 +107,13 @@ commands_dic = {
     "showqueue": queue1.showQueue,
     "size": queue1.queueSize,
     "debug": queue1.debugQueue,
-    "end": end,
     "commands":list_of_commands,
     }
 
-valid = True
-while valid:
+print("\nQueue successfully initialised.")
+
+running = True
+while running:
     try:
         user_input = input("\n>")
         print("")
@@ -118,6 +122,8 @@ while valid:
         if len(user_input)>1:
             value = user_input[1]
             commands_dic[command](value)
+        elif command == "end":
+            running = False
         else:
             print(commands_dic[command]())
     except:
