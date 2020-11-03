@@ -1,4 +1,6 @@
 #Pong
+### SRC - this looks a good bit of code, but the ball disappears
+### off the bottom or top sometimes and it could be faster!
 import pygame,random
 # -- Global Constants
 
