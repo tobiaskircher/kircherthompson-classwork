@@ -1,3 +1,6 @@
+### SRC - This looks really good.
+### I've made a small comment below...
+
 import pygame, random, math
 # -- Global Constants
 
@@ -34,6 +37,8 @@ class snow(pygame.sprite.Sprite):
     def update(self):
         self.rect.y = self.rect.y + self.speed
         if self.rect.y > 480:
+            ### SRC - I would also reset the x value to a random
+            ### number to make the effect more random.
             self.rect.y = 0
 #End Class
 
