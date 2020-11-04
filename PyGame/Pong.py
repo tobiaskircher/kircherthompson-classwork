@@ -29,7 +29,8 @@ size = (x_screen_size,y_screen_size)
 # -- Variables
 ball_width = 20
 ball_colour = WHITE
-ball_speed = 1
+ball_speed = 1.2
+ball_speed_multiplier = 1.2
 x_val = 320
 y_val = 200
 
@@ -93,26 +94,30 @@ while not done:
         ball_colour = rand_colour()
         
     # -- Collision with left paddle
-    if x_val == padd_width and (y_padd - ball_width < y_val < y_padd + padd_length):
+    if (0 <= x_val <= padd_width) and (y_padd - ball_width < y_val < y_padd + padd_length):
         x_direction *= -1
         ball_colour = rand_colour()
+        ball_speed *= ball_speed_multiplier
 
     if x_val <= 0:
         player2_score += 1
         x_val = 320
         y_val = random.randint(0,480)
         x_direction *= -1
+        ball_speed = 1.2
 
     # -- Collision with right paddle
-    if x_val == x_screen_size - padd_width - ball_width and (y_padd2 - ball_width < y_val < y_padd2 + padd_length):
+    if (x_screen_size - ball_width >= x_val >= x_screen_size - padd_width - ball_width) and (y_padd2 - ball_width < y_val < y_padd2 + padd_length):
         x_direction *= -1
         ball_colour = rand_colour()
+        ball_speed *= ball_speed_multiplier
 
     if x_val >= x_screen_size:
         player1_score += 1
         x_val = 320
         y_val = random.randint(0,480)
         x_direction *= -1
+        ball_speed = 1.2
         
     # -- flip display to reveal new position of objects
     pygame.display.flip()
