@@ -1,4 +1,4 @@
-class Dog:
+class Dog():
     def __init__(self, myName,myColour):
         self.__name = myName
         self.__colour = myColour
@@ -28,5 +28,5 @@ dog1 = Dog("Harry","White")
 print(dog1._Dog__name) #accessing hidden variables
 print(dog1.get_name())
 print(dog1.get_colour())
-dog1.bark(1)
+dog1.bark(2)
 
