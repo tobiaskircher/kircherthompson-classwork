@@ -1,3 +1,5 @@
+#went off track a bit, but i managed to simulate private variable behavior
+#for all attributes of the Dog class
 import inspect
 class Dog():
     def __init__(self, myName,myColour):
