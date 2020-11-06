@@ -16,7 +16,7 @@ def rand_colour():
         if i == zero_value:
             colour.append(0)
         else:
-            colour.append(random.randint(0,255))
+            colour.append(random.randint(200,255))
         #endif
     #next i
     return colour
@@ -68,9 +68,9 @@ while not done:
     
     keys = pygame.key.get_pressed()
     ## - PLAYER 2 the up key or down key has been pressed
-    if keys[pygame.K_UP] and y_padd2 >=0:
+    if keys[pygame.K_o] and y_padd2 >=0:
         y_padd2 -= 5
-    if keys[pygame.K_DOWN] and y_padd2 <= y_screen_size - padd_length:
+    if keys[pygame.K_l] and y_padd2 <= y_screen_size - padd_length:
         y_padd2 += 5
     #PLAYER 1
     if keys[pygame.K_w] and y_padd >=0:
