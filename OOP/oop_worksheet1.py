@@ -32,7 +32,7 @@ class Dog():
             del frame
         if insideclass == True:
             if attrname == "_Dog__colour":
-                if (value.lower() in ['black','brown','white']):
+                if (value.lower() in ['black','brown','white','grey']):
                     self.__dict__[attrname] = value
                 else:
                     try:    self.__dict__[attrname]
@@ -74,4 +74,6 @@ dog1._Dog__name = "Ben"
 print(dog1.get_name())
 print(dog1.get_colour())
 dog1.bark(2)
+dog1.set_colour("White")
+print(dog1.get_colour())
 
