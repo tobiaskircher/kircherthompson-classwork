@@ -11,20 +11,37 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface([width,width])
         self.image.fill(colour)
         self.rect = self.image.get_rect()
+        self.width = width
         self.rect.x = x
         self.rect.y = y
         self.speedX = 0
         self.speedY = 0
 
     def set_speedX(self, direction):
-        self.speedX = 5 * direction
+        self.speedX = 4 * direction
 
     def set_speedY(self, direction):
-        self.speedY = 5 * direction
+        self.speedY = 4 * direction
 
+    def check_wall_collision(self):
+        if pygame.sprite.spritecollide(player, wall_group, False):
+            return True
+        else:
+            return False
+     
     def update(self):
+        self.prev_x = self.rect.x
+        self.prev_y = self.rect.y
+        
         self.rect.x = self.rect.x + self.speedX
+        if self.check_wall_collision() == True:
+            self.rect.x = self.prev_x
+            self.speedX = 0
+        
         self.rect.y = self. rect.y + self.speedY
+        if self.check_wall_collision() == True:
+            self.rect.y = self.prev_y
+            self.speedY = 0
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width):
@@ -34,6 +51,9 @@ class Wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
+class InnerWall(Wall):
+    pass
                     
 # COLOURS
 BLACK = (0,0,0)
@@ -56,45 +76,59 @@ done = False
 # -- Manages how fast screen refreshes
 clock = pygame.time.Clock()
 
-#Map 1 
-game_map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ] #2D Array Of Map 25x25
+#MAP 1
+#Array of 25 strings, each containing 25 chars 
+game_map = ["#########################",
+            "#           +           #",
+            "#   +       +  +        #",
+            "#  + +      +  +        #",
+            "# +   +     +  +        #",
+            "#  + +      +  +        #",
+            "#   +       +  +        #",
+            "#           +  +        #",
+            "#           +  +        #",
+            "#           ++++        #",
+            "#        +     +        #",
+            "#        +     +        #",
+            "#        +  P  +        #",
+            "#        +     +        #",
+            "#        +     +        #",
+            "#        ++++           #",
+            "#        +  +           #",
+            "#        +  +           #",
+            "#        +  +       +   #",
+            "#        +  +      + +  #",
+            "#        +  +     +   + #",
+            "#        +  +      + +  #",
+            "#        +  +       +   #",
+            "#           +           #",
+            "#########################",]
 
 #Initialise Sprites and Add To Groups
 all_sprites_group = pygame.sprite.Group()
-player = Player(100,100,WHITE,20)
-all_sprites_group.add(player)
+wall_group = pygame.sprite.Group()
+
 
 for y in range(len(game_map)):
     for x in range(len(game_map[y])):
-        if game_map[y][x] == 1:
+        if game_map[y][x] != ' ':
             x_coordinate = (size[0] // 25) * x
             y_coordinate = (size[1] // 25) * y
-            wall = Wall(x_coordinate,y_coordinate,(size[0]//25))
-            all_sprites_group.add(wall)
+            
+            if game_map[y][x] == '#':
+                wall = Wall(x_coordinate,y_coordinate,(size[0]//25))
+                all_sprites_group.add(wall)
+                wall_group.add(wall)
+                
+            elif game_map[y][x] == "P":
+                player = Player(x_coordinate,y_coordinate,WHITE,20)
+                all_sprites_group.add(player)
+
+            elif game_map[y][x] == '+':
+                inner_wall = Wall(x_coordinate,y_coordinate,(size[0]//25))
+                all_sprites_group.add(inner_wall)
+                wall_group.add(inner_wall)
+            
 
 ### -- Game Loop
 while not done:
@@ -122,7 +156,26 @@ while not done:
     #Next event
             
     # -- Game logic goes after this comment
-    
+    '''if pygame.sprite.spritecollide(player, wall_group, False):
+        if player.rect.x < (size[0] // 25):
+            player.rect.x = (size[0] // 25) 
+            player.set_speedX(0)
+            
+        elif player.rect.x + player.width > (size[0] // 25) * 24:
+            player.rect.x = (size[0] // 25) * 24 - player.width
+            player.set_speedX(0)
+
+        elif player.rect.y < (size[1] // 25):
+            player.rect.y = (size[1] // 25) 
+            player.set_speedY(0)
+            
+        elif player.rect.y + player.width > (size[1] // 25) * 24:
+            player.rect.y = (size[1] // 25) * 24 - player.width
+            player.set_speedY(0)         
+        
+
+    prev_x = player.rect.x
+    prev_y = player.rect.y'''
     # -- Screen background is BLACK
     screen.fill(BLACK)
     all_sprites_group.update()
