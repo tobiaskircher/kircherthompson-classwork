@@ -16,6 +16,10 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = y
         self.speedX = 0
         self.speedY = 0
+        self.money = 0
+        self.health = 100
+        self.keys = 0
+        self.score = 0
 
     def set_speedX(self, direction):
         self.speedX = 4 * direction
@@ -65,7 +69,8 @@ pygame.init()
 
 # -- Blank Screen
 size = (600,600)
-screen = pygame.display.set_mode(size)
+screen_size = (size[0],size[1]+50)
+screen = pygame.display.set_mode(screen_size)
 
 # -- Title of new window/screen
 pygame.display.set_caption("Tile Game")
@@ -76,6 +81,31 @@ done = False
 # -- Manages how fast screen refreshes
 clock = pygame.time.Clock()
 
+'''blank_map = ["#########################",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#                       #",
+            "#        +  P  +        #",
+            "#        +     +        #",
+            "#        +     +        #",
+            "#        ++++           #",
+            "#        +  +           #",
+            "#        +  +           #",
+            "#        +  +       +   #",
+            "#        +  +      + +  #",
+            "#        +  +     +   + #",
+            "#        +  +      + +  #",
+            "#        +  +       +   #",
+            "#           +           #",
+            "#########################",]'''
 #MAP 1
 #Array of 25 strings, each containing 25 chars 
 game_map = ["#########################",
@@ -156,30 +186,19 @@ while not done:
     #Next event
             
     # -- Game logic goes after this comment
-    '''if pygame.sprite.spritecollide(player, wall_group, False):
-        if player.rect.x < (size[0] // 25):
-            player.rect.x = (size[0] // 25) 
-            player.set_speedX(0)
-            
-        elif player.rect.x + player.width > (size[0] // 25) * 24:
-            player.rect.x = (size[0] // 25) * 24 - player.width
-            player.set_speedX(0)
-
-        elif player.rect.y < (size[1] // 25):
-            player.rect.y = (size[1] // 25) 
-            player.set_speedY(0)
-            
-        elif player.rect.y + player.width > (size[1] // 25) * 24:
-            player.rect.y = (size[1] // 25) * 24 - player.width
-            player.set_speedY(0)         
-        
-
-    prev_x = player.rect.x
-    prev_y = player.rect.y'''
-    # -- Screen background is BLACK
+    
+    # -- Screen background is BLACK, Draw on Screen
     screen.fill(BLACK)
     all_sprites_group.update()
     all_sprites_group.draw(screen)
+
+    #Text
+    font = pygame.font.SysFont('Calibri', 25, True, False)
+    text = font.render(
+        "Health: "+str(player.health)+"| Score: "+str(player.score)
+        + " | Money: "+ str(player.money)+"| Keys:"+str(player.keys)
+        ,True,WHITE)
+    screen.blit(text, (0, size[1]+10))
 
     # -- flip display to reveal new position of objects
     pygame.display.flip()
