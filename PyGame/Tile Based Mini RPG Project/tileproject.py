@@ -47,6 +47,16 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = self.prev_y
             self.speedY = 0
 
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, health):
+        super().__init__()
+        self.image = pygame.Surface([width,width])
+        self.image.fill(PURPLE)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.health = health
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width):
         super().__init__()
@@ -63,6 +73,7 @@ class InnerWall(Wall):
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 RED = (255,0,0)
+PURPLE =(128,0,128)
 
 # -- Initialise PyGame
 pygame.init()
@@ -81,35 +92,10 @@ done = False
 # -- Manages how fast screen refreshes
 clock = pygame.time.Clock()
 
-'''blank_map = ["#########################",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#                       #",
-            "#        +  P  +        #",
-            "#        +     +        #",
-            "#        +     +        #",
-            "#        ++++           #",
-            "#        +  +           #",
-            "#        +  +           #",
-            "#        +  +       +   #",
-            "#        +  +      + +  #",
-            "#        +  +     +   + #",
-            "#        +  +      + +  #",
-            "#        +  +       +   #",
-            "#           +           #",
-            "#########################",]'''
 #MAP 1
 #Array of 25 strings, each containing 25 chars 
 game_map = ["#########################",
-            "#           +           #",
+            "#E          +           #",
             "#   +       +  +        #",
             "#  + +      +  +        #",
             "# +   +     +  +        #",
@@ -131,7 +117,7 @@ game_map = ["#########################",
             "#        +  +     +   + #",
             "#        +  +      + +  #",
             "#        +  +       +   #",
-            "#           +           #",
+            "#E          +          E#",
             "#########################",]
 
 #Initialise Sprites and Add To Groups
@@ -158,7 +144,10 @@ for y in range(len(game_map)):
                 inner_wall = Wall(x_coordinate,y_coordinate,(size[0]//25))
                 all_sprites_group.add(inner_wall)
                 wall_group.add(inner_wall)
-            
+                
+            elif game_map[y][x] == 'E':
+                enemy = Enemy(x_coordinate,y_coordinate,20, 100)
+                all_sprites_group.add(enemy)          
 
 ### -- Game Loop
 while not done:
