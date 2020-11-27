@@ -1,7 +1,7 @@
 #MINI PROJECT
 
 #IMPORTS
-import pygame
+import pygame, random
 
 #CLASSES
 
@@ -48,10 +48,10 @@ class Player(pygame.sprite.Sprite):
             self.speedY = 0
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, health):
+    def __init__(self, x, y, width, health, colour):
         super().__init__()
         self.image = pygame.Surface([width,width])
-        self.image.fill(PURPLE)
+        self.image.fill(colour)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -72,8 +72,14 @@ class InnerWall(Wall):
 # COLOURS
 BLACK = (0,0,0)
 WHITE = (255,255,255)
+
 RED = (255,0,0)
-PURPLE =(128,0,128)
+ORANGE = (255,165,0)
+YELLOW = (255,255,0)
+GREEN = (0,255,0)
+BLUE = (0,0,255)
+INDIGO = (75,0,130)
+VIOLET = (238, 130, 238)
 
 # -- Initialise PyGame
 pygame.init()
@@ -95,11 +101,11 @@ clock = pygame.time.Clock()
 #MAP 1
 #Array of 25 strings, each containing 25 chars 
 game_map = ["#########################",
-            "#E          +           #",
+            "#           +           #",
             "#   +       +  +        #",
-            "#  + +      +  +        #",
-            "# +   +     +  +        #",
-            "#  + +      +  +        #",
+            "#  +0+      +  +        #",
+            "# +000+     +  +        #",
+            "#  +0+      +  +        #",
             "#   +       +  +        #",
             "#           +  +        #",
             "#           +  +        #",
@@ -113,18 +119,31 @@ game_map = ["#########################",
             "#        +  +           #",
             "#        +  +           #",
             "#        +  +       +   #",
-            "#        +  +      + +  #",
-            "#        +  +     +   + #",
-            "#        +  +      + +  #",
+            "#        +  +      +0+  #",
+            "#        +  +     +000+ #",
+            "#        +  +      +0+  #",
             "#        +  +       +   #",
-            "#E          +          E#",
+            "#           +           #",
             "#########################",]
+#0 represents a blank spot that should not be filled
 
 #Initialise Sprites and Add To Groups
 all_sprites_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()
 
+enemy_count = 0
+while enemy_count < 4:
+    i = random.randint(0,24)
+    j = random.randint(0,24)
+    if game_map[j][i] == ' ':
+        temp = list(game_map[j])
+        temp[i] = "E"
+        game_map[j] = temp
+        enemy_count += 1
 
+
+#generate sprites and add to groups
+enemy_colour = random.choice([ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET])
 for y in range(len(game_map)):
     for x in range(len(game_map[y])):
         if game_map[y][x] != ' ':
@@ -137,7 +156,7 @@ for y in range(len(game_map)):
                 wall_group.add(wall)
                 
             elif game_map[y][x] == "P":
-                player = Player(x_coordinate,y_coordinate,WHITE,20)
+                player = Player(x_coordinate,y_coordinate,WHITE,24)
                 all_sprites_group.add(player)
 
             elif game_map[y][x] == '+':
@@ -146,7 +165,7 @@ for y in range(len(game_map)):
                 wall_group.add(inner_wall)
                 
             elif game_map[y][x] == 'E':
-                enemy = Enemy(x_coordinate,y_coordinate,20, 100)
+                enemy = Enemy(x_coordinate,y_coordinate,24, 100, enemy_colour)
                 all_sprites_group.add(enemy)          
 
 ### -- Game Loop
