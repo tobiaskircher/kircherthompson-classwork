@@ -20,6 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
         self.keys = 0
         self.score = 0
+        self.died = False
 
     def set_speedX(self, direction):
         self.speedX = 4 * direction
@@ -32,6 +33,16 @@ class Player(pygame.sprite.Sprite):
             return True
         else:
             return False
+
+    def check_enemy_collision(self):
+        if pygame.sprite.spritecollide(player,enemy_group, True):
+            player.health -= random.randint(17,30)
+            self.keys += 1
+            if player.health <= 0:
+                self.health = 0
+                self.died = True
+                print("Game Over.")
+                
      
     def update(self):
         self.prev_x = self.rect.x
@@ -46,6 +57,8 @@ class Player(pygame.sprite.Sprite):
         if self.check_wall_collision() == True:
             self.rect.y = self.prev_y
             self.speedY = 0
+
+        self.check_enemy_collision()
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, width, health, colour):
@@ -109,13 +122,13 @@ game_map = ["#########################",
             "#   +       +  +        #",
             "#           +  +        #",
             "#           +  +        #",
-            "#           ++++        #",
-            "#        +     +        #",
-            "#        +     +        #",
-            "#        +  P  +        #",
-            "#        +     +        #",
-            "#        +     +        #",
-            "#        ++++           #",
+            "#        000++++        #",
+            "#        +00000+        #",
+            "#        +00000+        #",
+            "#        +00P00+        #",
+            "#        +00000+        #",
+            "#        +00000+        #",
+            "#        ++++000        #",
             "#        +  +           #",
             "#        +  +           #",
             "#        +  +       +   #",
@@ -125,11 +138,12 @@ game_map = ["#########################",
             "#        +  +       +   #",
             "#           +           #",
             "#########################",]
-#0 represents a blank spot that should not be filled
+#0 represents a blank spot that should not be taken up
 
 #Initialise Sprites and Add To Groups
 all_sprites_group = pygame.sprite.Group()
 wall_group = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
 
 enemy_count = 0
 while enemy_count < 4:
@@ -166,7 +180,8 @@ for y in range(len(game_map)):
                 
             elif game_map[y][x] == 'E':
                 enemy = Enemy(x_coordinate,y_coordinate,24, 100, enemy_colour)
-                all_sprites_group.add(enemy)          
+                all_sprites_group.add(enemy)
+                enemy_group.add(enemy)
 
 ### -- Game Loop
 while not done:
