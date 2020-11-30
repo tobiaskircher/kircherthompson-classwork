@@ -111,6 +111,18 @@ class Portal(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+class Maps():
+    def __init__(self):
+        self.maps = ["level_1.txt","level_2.txt"]
+        self.current_map = []
+
+    def get_next_map(self):
+        self.current_map = []
+        file = open(self.maps[game_state.level - 1], "r")
+        for line in file:
+            self.current_map.append(line)
+        file.close()
+    
 class GameState():
     def __init__(self):
         self.state = "main_game"
@@ -120,7 +132,8 @@ class GameState():
 
     def update_state(self):
         if self.level != self.prev_level:
-            setup(maps[self.level - 1])
+            map_manager.get_next_map()
+            setup(map_manager.current_map)
             self.prev_level = self.level
         if player.died == True:
             self.state = "game_over"
@@ -264,62 +277,8 @@ def setup(game_map):
                     all_sprites_group.add(enemy)
                     enemy_group.add(enemy)
 
+map_manager = Maps()
 
-#MAP 1
-#Array of 25 strings, each containing 25 chars 
-game_map_1 = ["#########################",
-            "#           +           #",
-            "#   +       +  +        #",
-            "#  +0+      +  +        #",
-            "# +000+     +  +        #",
-            "#  +0+      +  +        #",
-            "#   +       +  +        #",
-            "#           +  +        #",
-            "#           +  +        #",
-            "#        000++++        #",
-            "#        +00000+        #",
-            "#        +00000+        #",
-            "#        +00P00+        #",
-            "#        +00000+        #",
-            "#        +00000+        #",
-            "#        ++++000        #",
-            "#        +  +           #",
-            "#        +  +           #",
-            "#        +  +       +   #",
-            "#        +  +      +0+  #",
-            "#        +  +     +000+ #",
-            "#        +  +      +0+  #",
-            "#        +  +       +   #",
-            "#           +          0#",
-            "#########################",]
-
-game_map_2 = ["#########################",
-            "#           +           #",
-            "#   +       +  +        #",
-            "#  +++      +  +        #",
-            "# +++++     +  +        #",
-            "#  +++      +  +        #",
-            "#   +       +  +        #",
-            "#       P   +  +        #",
-            "#           +  +        #",
-            "#        000++++        #",
-            "#        +00000+        #",
-            "#        +00000+        #",
-            "#        +00000+        #",
-            "#        +00000+        #",
-            "#        +00000+        #",
-            "#        ++++000        #",
-            "#        +  +           #",
-            "#        +  +           #",
-            "#        +  +       +   #",
-            "#        +  +      +++  #",
-            "#        +  +     +++++ #",
-            "#        +  +      +++  #",
-            "#        +  +       +   #",
-            "#           +          0#",
-            "#########################",]
-
-maps = [game_map_1, game_map_2]
 ### -- Game Loop
 game_state = GameState()
 
