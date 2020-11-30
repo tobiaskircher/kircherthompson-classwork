@@ -3,7 +3,7 @@
 #IMPORTS
 import pygame, random
 
-#CLASSES
+#CLASSES & FUNCTIONS
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, colour, width):
         super().__init__()
@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
 
     def check_enemy_collision(self):
         if pygame.sprite.spritecollide(player,enemy_group, True):
-            player.health -= random.randint(17,30)
+            player.health -= random.randint(5,10)
             self.keys += 1
             if player.health <= 0:
                 self.health = 0
@@ -46,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(player, portal_group, False):
             game_state.level += 1
             self.keys = 0
+            self.portal_created = False
 
     def make_portal(self):
         x_coordinate = (size[0] // 25) * 23
@@ -113,15 +114,19 @@ class Portal(pygame.sprite.Sprite):
 
 class Maps():
     def __init__(self):
-        self.maps = ["level_1.txt","level_2.txt"]
         self.current_map = []
 
-    def get_next_map(self):
+    def next_map(self):
         self.current_map = []
-        file = open(self.maps[game_state.level - 1], "r")
-        for line in file:
-            self.current_map.append(line)
-        file.close()
+        try:
+            self.file_name = "level_" + str(game_state.level) + ".txt"
+            file = open(self.file_name, "r")
+            for line in file:
+                self.current_map.append(line)
+            file.close()
+            setup(map_manager.current_map)
+        except:
+            game_state.is_game_completed = True
     
 class GameState():
     def __init__(self):
@@ -129,14 +134,16 @@ class GameState():
         self.done = False
         self.level = 1
         self.prev_level = 0
+        self.is_game_completed = False
 
     def update_state(self):
         if self.level != self.prev_level:
-            map_manager.get_next_map()
-            setup(map_manager.current_map)
+            map_manager.next_map()            
             self.prev_level = self.level
-        if player.died == True:
+        if player.died:
             self.state = "game_over"
+        elif self.is_game_completed:
+            self.state = "game_completed"
 
     def state_manager(self):
         self.update_state()
@@ -144,6 +151,8 @@ class GameState():
             self.main_game()
         elif self.state == "game_over":
             self.game_over()
+        elif self.state == "game_completed":
+            self.game_completed()
             
     def main_game(self):  
         # -- User input and controls
@@ -197,40 +206,19 @@ class GameState():
             if event.type == pygame.QUIT:
                 self.done = True
 
+    def game_completed(self):
+        screen.fill(BLACK)
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        text = font.render("Game Completed",True,WHITE)
+        screen.blit(text, (0,0))
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.done = True
+
         
     
-
-# COLOURS
-BLACK = (0,0,0)
-WHITE = (255,255,255)
-
-RED = (255,0,0)
-ORANGE = (255,165,0)
-YELLOW = (255,255,0)
-GREEN = (0,255,0)
-BLUE = (0,0,255)
-INDIGO = (75,0,130)
-VIOLET = (238, 130, 238)
-
-# -- Initialise PyGame
-pygame.init()
-
-# -- Blank Screen
-size = (600,600)
-screen_size = (size[0],size[1]+50)
-screen = pygame.display.set_mode(screen_size)
-
-# -- Title of new window/screen
-pygame.display.set_caption("Tile Game")
-
-# -- Exit game flag set to false
-done = False
-
-# -- Manages how fast screen refreshes
-clock = pygame.time.Clock()
-
-player = Player(0,0,WHITE,24)
-
 def setup(game_map):
     #Initialise Sprites and Add To Groups
     global all_sprites_group, wall_group, enemy_group, portal_group
@@ -277,15 +265,46 @@ def setup(game_map):
                     all_sprites_group.add(enemy)
                     enemy_group.add(enemy)
 
-map_manager = Maps()
+
+
+
+# COLOURS
+BLACK = (0,0,0)
+WHITE = (255,255,255)
+
+RED = (255,0,0)
+ORANGE = (255,165,0)
+YELLOW = (255,255,0)
+GREEN = (0,255,0)
+BLUE = (0,0,255)
+INDIGO = (75,0,130)
+VIOLET = (238, 130, 238)
+
+# -- Initialise PyGame
+pygame.init()
+
+# -- Blank Screen
+size = (600,600)
+screen_size = (size[0],size[1]+50)
+screen = pygame.display.set_mode(screen_size)
+
+# -- Title of new window/screen
+pygame.display.set_caption("Tile Game")
+
+# -- Exit game flag set to false
+done = False
+
+# -- Manages how fast screen refreshes
+clock = pygame.time.Clock()
+
+player = Player(0,0,WHITE,24)
 
 ### -- Game Loop
 game_state = GameState()
+map_manager = Maps()
 
 while not game_state.done:
-
-        game_state.state_manager()
-        
+        game_state.state_manager() 
          # - The clock ticks over
         clock.tick(60)
     
