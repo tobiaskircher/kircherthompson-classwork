@@ -130,7 +130,7 @@ class Maps():
     
 class GameState():
     def __init__(self):
-        self.state = "main_game"
+        self.state = "game_menu"
         self.done = False
         self.level = 1
         self.prev_level = 0
@@ -153,7 +153,25 @@ class GameState():
             self.game_over()
         elif self.state == "game_completed":
             self.game_completed()
-            
+        elif self.state == "game_menu":
+            self.menu()
+
+    def menu(self):
+        screen.fill(BLACK)
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        text = font.render("Stickman Escape",True,WHITE)
+        screen.blit(text, (0,0))
+        font = pygame.font.SysFont('Calibri', 25, True, False)
+        text = font.render("Click To Start",True,WHITE)
+        screen.blit(text, (0,30))
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.done = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.state = "main_game"
+                
     def main_game(self):  
         # -- User input and controls
         for event in pygame.event.get():
@@ -280,16 +298,17 @@ BLUE = (0,0,255)
 INDIGO = (75,0,130)
 VIOLET = (238, 130, 238)
 
+
 # -- Initialise PyGame
 pygame.init()
 
 # -- Blank Screen
 size = (600,600)
-screen_size = (size[0],size[1]+50)
+screen_size = (size[0],size[1]+40)
 screen = pygame.display.set_mode(screen_size)
 
 # -- Title of new window/screen
-pygame.display.set_caption("Tile Game")
+pygame.display.set_caption("Stickman Escape")
 
 # -- Exit game flag set to false
 done = False
