@@ -7,18 +7,33 @@ import pygame, random
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, colour, width):
         super().__init__()
+        #Images & Animation Attributes
+        self.idle = pygame.transform.scale(pygame.image.load("idle.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run1 = pygame.transform.scale(pygame.image.load("run1.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run2 = pygame.transform.scale(pygame.image.load("run2.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run3 = pygame.transform.scale(pygame.image.load("run3.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run4 = pygame.transform.scale(pygame.image.load("run4.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run5 = pygame.transform.scale(pygame.image.load("run5.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run6 = pygame.transform.scale(pygame.image.load("run6.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run7 = pygame.transform.scale(pygame.image.load("run7.jpg").convert(), (size[0]//25,size[0]//25))
+        self.run8 = pygame.transform.scale(pygame.image.load("run8.jpg").convert(), (size[0]//25,size[0]//25))
+        self.current_animation = self.idle
+        self.run_noX = -1
+        self.run_animationsX = [self.run1, self.run2, self.run3, self.run4, self.run5, self.run6]
+        self.run_noY = -1
+        self.run_animationsY = [self.idle, self.run7, self.idle, self.run8]
+
+        #Attributes
         self.image = pygame.Surface([width,width])
-        self.image.fill(colour)
+        self.image = self.current_animation
         self.rect = self.image.get_rect()
         self.width = width
         self.rect.x = x
         self.rect.y = y
         self.speedX = 0
         self.speedY = 0
-        self.money = 0
         self.health = 100
         self.keys = 0
-        self.score = 0
         self.died = False
         self.portal_created = False
 
@@ -57,11 +72,40 @@ class Player(pygame.sprite.Sprite):
         self.portal_created = True
 
      
-    def update(self):
+    def update(self):   
+        #Animation
+        if self.speedX != 0:
+            self.run_noX += 1
+            if self.run_noX == 12:
+                self.run_noX = 0
+            self.current_animation = self.run_animationsX[self.run_noX//2]
+            #12 and //2 to make animation slower ie 2 moves before animation update
+            if self.speedX < 0:
+                self.current_animation = pygame.transform.flip(self.current_animation, True, False)
+  
+        elif self.speedY != 0:
+            self.run_noY += 1
+            if self.run_noY == 15:
+                self.run_noY = 0
+                
+            self.current_animation = self.run_animationsY[self.run_noY//4]
+            
+        elif self.speedX == 0:
+            player.current_animation = player.idle
+            player.run_noX = -1
+
+        elif self.speedY == 0:
+            player.current_animation = player.idle
+            player.run_noY = -1
+
+        self.image = self.current_animation
+
+        #Movement
         self.prev_x = self.rect.x
         self.prev_y = self.rect.y
         
         self.rect.x = self.rect.x + self.speedX
+            
         if self.check_wall_collision() == True:
             self.rect.x = self.prev_x
             self.speedX = 0
@@ -71,8 +115,10 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = self.prev_y
             self.speedY = 0
 
+        #Enemies
         self.check_enemy_collision()
 
+        #Portal 
         if self.portal_created == True:
             self.check_portal_collision()
             
@@ -127,7 +173,14 @@ class Maps():
             setup(map_manager.current_map)
         except:
             game_state.is_game_completed = True
-    
+
+class UI():
+    def draw_text(self,font_text,font_size,x,y):
+        font = pygame.font.SysFont('Calibri', font_size, True, False)
+        text = font.render(font_text,True,WHITE)
+        text_rect = text.get_rect(center=(size[0]/2, y+ text.get_rect().height / 2))
+        screen.blit(text, text_rect)
+        
 class GameState():
     def __init__(self):
         self.state = "game_menu"
@@ -158,12 +211,8 @@ class GameState():
 
     def menu(self):
         screen.fill(BLACK)
-        font = pygame.font.SysFont('Calibri', 25, True, False)
-        text = font.render("Stickman Escape",True,WHITE)
-        screen.blit(text, (0,0))
-        font = pygame.font.SysFont('Calibri', 25, True, False)
-        text = font.render("Click To Start",True,WHITE)
-        screen.blit(text, (0,30))
+        ui.draw_text("Stickman Escape",50,0,0)
+        ui.draw_text("Click Anywhere To Start!",25,0,size[1])
         pygame.display.flip()
         
         for event in pygame.event.get():
@@ -204,36 +253,51 @@ class GameState():
         all_sprites_group.draw(screen)
 
         #Text
-        font = pygame.font.SysFont('Calibri', 25, True, False)
-        text = font.render(
-            "Health: "+str(player.health)+"| Score: "+str(player.score)
-            + " | Money: "+ str(player.money)+"| Keys:"+str(player.keys)
-            ,True,WHITE)
-        screen.blit(text, (0, size[1]+10))
+        ui.draw_text("Health: "+str(player.health)+
+                     "| Keys:"+str(player.keys) +" | Level: " +
+                     str(game_state.level),25,0,size[1]+10)
 
         pygame.display.flip()
         
     def game_over(self):
         screen.fill(BLACK)
-        font = pygame.font.SysFont('Calibri', 25, True, False)
-        text = font.render("Game Over",True,WHITE)
-        screen.blit(text, (0,0))
+        ui.draw_text("Game Over",50,0,0)
+        ui.draw_text("Click Anywhere To Restart!",25,0,size[1]+10)
+        
         pygame.display.flip()
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.state = "main_game"
+                player.health = 100
+                player.keys = 0
+                self.level = 1
+                self.prev_level = 0
+                self.is_game_completed = False
+                player.speedX = 0
+                player.speedY = 0
+                
 
     def game_completed(self):
         screen.fill(BLACK)
-        font = pygame.font.SysFont('Calibri', 25, True, False)
-        text = font.render("Game Completed",True,WHITE)
-        screen.blit(text, (0,0))
+        ui.draw_text("Game Completed",50,0,0)
+        ui.draw_text("Click Anywhere To Play Again!",25,0,size[1]+10)
         pygame.display.flip()
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.state = "main_game"
+                player.health = 100
+                player.keys = 0
+                self.level = 1
+                self.prev_level = 0
+                self.is_game_completed = False
+                player.speedX = 0
+                player.speedY = 0
 
         
     
@@ -318,9 +382,13 @@ clock = pygame.time.Clock()
 
 player = Player(0,0,WHITE,24)
 
+#Images
+idle = pygame.transform.scale(pygame.image.load("idle.jpg").convert(), (size[0]//25,size[0]//25))
+
 ### -- Game Loop
 game_state = GameState()
 map_manager = Maps()
+ui = UI()
 
 while not game_state.done:
         game_state.state_manager() 
