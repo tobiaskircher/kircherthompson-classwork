@@ -4,24 +4,28 @@
 import pygame, random
 
 #CLASSES & FUNCTIONS
-class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, colour, width):
-        super().__init__()
+class PlayerAnimations():
+    def __init__(self, size):
         #Images & Animation Attributes
-        self.idle = pygame.transform.scale(pygame.image.load("idle.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run1 = pygame.transform.scale(pygame.image.load("run1.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run2 = pygame.transform.scale(pygame.image.load("run2.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run3 = pygame.transform.scale(pygame.image.load("run3.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run4 = pygame.transform.scale(pygame.image.load("run4.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run5 = pygame.transform.scale(pygame.image.load("run5.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run6 = pygame.transform.scale(pygame.image.load("run6.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run7 = pygame.transform.scale(pygame.image.load("run7.jpg").convert(), (size[0]//25,size[0]//25))
-        self.run8 = pygame.transform.scale(pygame.image.load("run8.jpg").convert(), (size[0]//25,size[0]//25))
+        self.idle = pygame.transform.scale(pygame.image.load("idle.jpg").convert(), (size,size))
+        self.run1 = pygame.transform.scale(pygame.image.load("run1.jpg").convert(), (size,size))
+        self.run2 = pygame.transform.scale(pygame.image.load("run2.jpg").convert(), (size,size))
+        self.run3 = pygame.transform.scale(pygame.image.load("run3.jpg").convert(), (size,size))
+        self.run4 = pygame.transform.scale(pygame.image.load("run4.jpg").convert(), (size,size))
+        self.run5 = pygame.transform.scale(pygame.image.load("run5.jpg").convert(), (size,size))
+        self.run6 = pygame.transform.scale(pygame.image.load("run6.jpg").convert(), (size,size))
+        self.run7 = pygame.transform.scale(pygame.image.load("run7.jpg").convert(), (size,size))
+        self.run8 = pygame.transform.scale(pygame.image.load("run8.jpg").convert(), (size,size))
         self.current_animation = self.idle
         self.run_noX = -1
         self.run_animationsX = [self.run1, self.run2, self.run3, self.run4, self.run5, self.run6]
         self.run_noY = -1
         self.run_animationsY = [self.idle, self.run7, self.idle, self.run8]
+    
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y, colour, width):
+        super().__init__()
+        PlayerAnimations.__init__(self, width)
 
         #Attributes
         self.image = pygame.Surface([width,width])
@@ -128,26 +132,27 @@ class Player(pygame.sprite.Sprite):
         
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, health, colour):
-        super().__init__()
+    def __init__(self, x, y, width):
+        super().__init__() 
         self.image = pygame.Surface([width,width])
-        self.image.fill(colour)
+        self.image = pygame.transform.scale(pygame.image.load("enemy_idle.jpg").convert(), (size[0]//25,size[0]//25))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.health = health
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width):
         super().__init__()
         self.image = pygame.Surface([width,width])
-        self.image.fill(RED)
+        self.image = pygame.transform.scale(pygame.image.load("outer_wall.jpg").convert(), (size[0]//25,size[0]//25))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
 
 class InnerWall(Wall):
-    pass
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load("inner_wall.jpg").convert(), (size[0]//25,size[0]//25))
 
 class Portal(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -176,10 +181,39 @@ class Maps():
 
 class UI():
     def draw_text(self,font_text,font_size,x,y):
+        #Centered Text
         font = pygame.font.SysFont('Calibri', font_size, True, False)
         text = font.render(font_text,True,WHITE)
         text_rect = text.get_rect(center=(size[0]/2, y+ text.get_rect().height / 2))
         screen.blit(text, text_rect)
+
+    def draw_image(self, file_name, size_x, size_y, x, y):
+        self.image = pygame.Surface([size_x,size_y])
+        self.image = pygame.transform.scale(pygame.image.load(file_name).convert(), (size_x,size_y))
+        self.rect = self.image.get_rect()
+        self.rect.x = x - self.rect.width // 2
+        self.rect.y = y - self.rect.height // 2
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+class MenuAnim(pygame.sprite.Sprite):
+    def __init__(self, file_name, size_x, size_y, x, y):
+        super().__init__()
+        PlayerAnimations.__init__(self,size_x)
+        self.image = pygame.Surface([size_x,size_y])
+        self.image = pygame.transform.scale(pygame.image.load(file_name).convert(), (size_x,size_y))
+        self.rect = self.image.get_rect()
+        self.rect.x = x - self.rect.width // 2
+        self.rect.y = y - self.rect.height // 2
+
+    def draw(self):
+        self.run_noX += 1
+        if self.run_noX == 24:
+            self.run_noX = 0
+        self.image = self.run_animationsX[self.run_noX//4]
+            
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+    
         
 class GameState():
     def __init__(self):
@@ -188,6 +222,7 @@ class GameState():
         self.level = 1
         self.prev_level = 0
         self.is_game_completed = False
+        self.menu_player = MenuAnim("idle.jpg",300,300,320,320)
 
     def update_state(self):
         if self.level != self.prev_level:
@@ -213,6 +248,8 @@ class GameState():
         screen.fill(BLACK)
         ui.draw_text("Stickman Escape",50,0,0)
         ui.draw_text("Click Anywhere To Start!",25,0,size[1])
+        
+        self.menu_player.draw()
         pygame.display.flip()
         
         for event in pygame.event.get():
@@ -278,6 +315,7 @@ class GameState():
                 self.is_game_completed = False
                 player.speedX = 0
                 player.speedY = 0
+                player.died = False
                 
 
     def game_completed(self):
@@ -320,7 +358,6 @@ def setup(game_map):
             enemy_count += 1
 
     #generate sprites and add to groups
-    enemy_colour = random.choice([ORANGE, YELLOW, GREEN, BLUE, INDIGO])
     for y in range(len(game_map)):
         for x in range(len(game_map[y])):
             if game_map[y][x] != ' ':
@@ -343,7 +380,7 @@ def setup(game_map):
                     wall_group.add(inner_wall)
                     
                 elif game_map[y][x] == 'E':
-                    enemy = Enemy(x_coordinate,y_coordinate,24, 100, enemy_colour)
+                    enemy = Enemy(x_coordinate,y_coordinate,24)
                     all_sprites_group.add(enemy)
                     enemy_group.add(enemy)
 
@@ -382,13 +419,12 @@ clock = pygame.time.Clock()
 
 player = Player(0,0,WHITE,24)
 
-#Images
-idle = pygame.transform.scale(pygame.image.load("idle.jpg").convert(), (size[0]//25,size[0]//25))
 
 ### -- Game Loop
 game_state = GameState()
 map_manager = Maps()
 ui = UI()
+#tilesize = size[0]//2
 
 while not game_state.done:
         game_state.state_manager() 
