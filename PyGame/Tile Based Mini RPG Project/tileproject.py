@@ -55,7 +55,7 @@ class Player(pygame.sprite.Sprite):
 
     def check_enemy_collision(self):
         if pygame.sprite.spritecollide(player,enemy_group, True):
-            player.health -= random.randint(5,10)
+            player.health -= random.randint(1,15)
             self.keys += 1
             if player.health <= 0:
                 self.health = 0
@@ -130,7 +130,35 @@ class Player(pygame.sprite.Sprite):
             self.make_portal()
 
         
-
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y,direction):
+        #1= up, 2=right, 3=down, 4=left
+        super().__init__() 
+        self.image = pygame.Surface([5,5])
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        if direction == 1 or direction == 4:
+            self.speed = -4
+        else:
+            self.speed = 4
+        if direction == 1 or direction == 3:
+            self.axis = "y"
+        else:
+            self.axis = "x"
+            
+     
+    def update(self):
+        if self.axis == "x":
+            self.rect.x += self.speed
+        else:
+            self.rect.y += self.speed
+        if pygame.sprite.spritecollide(player,bullet_group, True):
+            player.died = True
+        
+        
+    
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, width):
         super().__init__() 
@@ -139,6 +167,38 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.bulletsX = 1
+        self.bulletsY = 1
+
+    def update(self):
+        if self.rect.center[0] == player.rect.center[0] or self.rect.center[1] == player.rect.center[1]:
+            line = (self.rect.center, player.rect.center)
+            self.shoot = True
+            for wall in wall_group:
+                if wall.rect.clipline(line):
+                    self.shoot = False
+            if self.rect.center[0] == player.rect.center[0]:        
+                if self.shoot == True & self.bulletsY > 0:
+                    self.bulletsY -= 1
+                    if self.rect.center[1] > player.rect.center[1]:
+                        bullet = Bullet(self.rect.center[0],self.rect.center[1],1)
+                    else:
+                        bullet = Bullet(self.rect.center[0],self.rect.center[1],3)
+                        
+                    all_sprites_group.add(bullet)
+                    bullet_group.add(bullet)
+            else:
+                if self.shoot == True & self.bulletsX > 0:
+                    self.bulletsX -= 1
+                    if self.rect.center[0] > player.rect.center[0]:
+                        bullet = Bullet(self.rect.center[0],self.rect.center[1],4)
+                    else:
+                        bullet = Bullet(self.rect.center[0],self.rect.center[1],2)
+                        
+                    all_sprites_group.add(bullet)
+                    bullet_group.add(bullet)
+                
+
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width):
@@ -148,6 +208,11 @@ class Wall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        
+    def update(self):
+        if pygame.sprite.spritecollide(self,bullet_group, True):
+            pass
+        
 
 class InnerWall(Wall):
     def __init__(self):
@@ -158,7 +223,7 @@ class Portal(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.image = pygame.Surface([(size[0]//25),(size[0]//25)])
-        self.image.fill(VIOLET)
+        self.image = pygame.transform.scale(pygame.image.load("portal.jpg").convert(), (tilesize,tilesize))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -223,6 +288,7 @@ class GameState():
         self.prev_level = 0
         self.is_game_completed = False
         self.menu_player = MenuAnim("idle.jpg",300,300,320,320)
+        self.ku, self.kd, self.kr, self.kl = 0,0,0,0
 
     def update_state(self):
         if self.level != self.prev_level:
@@ -267,18 +333,24 @@ class GameState():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     player.set_speedX(-1)
+                    
                 elif event.key == pygame.K_RIGHT:
+
                     player.set_speedX(1)
                 elif event.key == pygame.K_UP:
                     player.set_speedY(-1)
+
                 elif event.key == pygame.K_DOWN:
                     player.set_speedY(1)
 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     player.set_speedX(0)
-                elif event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+
+                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     player.set_speedY(0)
+
+                    
             #End If
         #Next event
                 
@@ -291,7 +363,7 @@ class GameState():
 
         #Text
         ui.draw_text("Health: "+str(player.health)+
-                     "| Keys:"+str(player.keys) +" | Level: " +
+                     "| Keys: "+str(player.keys) +" | Level: " +
                      str(game_state.level),25,0,size[1]+10)
 
         pygame.display.flip()
@@ -300,6 +372,7 @@ class GameState():
         screen.fill(BLACK)
         ui.draw_text("Game Over",50,0,0)
         ui.draw_text("Click Anywhere To Restart!",25,0,size[1]+10)
+        ui.draw_image("player_lose.jpg",300,300,320,320)
         
         pygame.display.flip()
         
@@ -322,6 +395,7 @@ class GameState():
         screen.fill(BLACK)
         ui.draw_text("Game Completed",50,0,0)
         ui.draw_text("Click Anywhere To Play Again!",25,0,size[1]+10)
+        ui.draw_image("player_win.jpg",300,300,320,320)
         pygame.display.flip()
         
         for event in pygame.event.get():
@@ -341,11 +415,12 @@ class GameState():
     
 def setup(game_map):
     #Initialise Sprites and Add To Groups
-    global all_sprites_group, wall_group, enemy_group, portal_group
+    global all_sprites_group, wall_group, enemy_group, portal_group, bullet_group
     all_sprites_group = pygame.sprite.Group()
     wall_group = pygame.sprite.Group()
     enemy_group = pygame.sprite.Group()
     portal_group = pygame.sprite.Group()
+    bullet_group = pygame.sprite.Group()
 
     enemy_count = 0
     while enemy_count < 4:
@@ -424,7 +499,7 @@ player = Player(0,0,WHITE,24)
 game_state = GameState()
 map_manager = Maps()
 ui = UI()
-#tilesize = size[0]//2
+tilesize = size[0]//25
 
 while not game_state.done:
         game_state.state_manager() 
