@@ -328,31 +328,24 @@ class GameState():
         # -- User input and controls
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.done = True
-
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player.set_speedX(-1)
-                    
-                elif event.key == pygame.K_RIGHT:
-
-                    player.set_speedX(1)
-                elif event.key == pygame.K_UP:
-                    player.set_speedY(-1)
-
-                elif event.key == pygame.K_DOWN:
-                    player.set_speedY(1)
-
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    player.set_speedX(0)
-
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    player.set_speedY(0)
-
-                    
+                self.done = True                    
             #End If
         #Next event
+        keys = pygame.key.get_pressed()
+        if (keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]) or (not keys[pygame.K_LEFT] and not keys[pygame.K_RIGHT]):
+            player.set_speedX(0)
+        elif keys[pygame.K_LEFT]:
+             player.set_speedX(-1)
+        elif keys[pygame.K_RIGHT]:
+             player.set_speedX(1)
+             
+        if (keys[pygame.K_UP] and keys[pygame.K_DOWN]) or (not keys[pygame.K_UP] and not keys[pygame.K_DOWN]):
+            player.set_speedY(0)
+        elif keys[pygame.K_UP]:
+             player.set_speedY(-1)
+        elif keys[pygame.K_DOWN]:
+             player.set_speedY(1)
+
                 
         # -- Game logic goes after this comment
         
