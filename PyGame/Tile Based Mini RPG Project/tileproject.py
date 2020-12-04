@@ -55,7 +55,7 @@ class Player(pygame.sprite.Sprite):
 
     def check_enemy_collision(self):
         if pygame.sprite.spritecollide(player,enemy_group, True):
-            player.health -= random.randint(1,15)
+            player.health -= random.randint(1,5)
             self.keys += 1
             if player.health <= 0:
                 self.health = 0
@@ -126,7 +126,7 @@ class Player(pygame.sprite.Sprite):
         if self.portal_created == True:
             self.check_portal_collision()
             
-        if self.keys == 4 and self.portal_created == False:
+        if self.keys == 6 and self.portal_created == False:
             self.make_portal()
 
         
@@ -146,8 +146,7 @@ class Bullet(pygame.sprite.Sprite):
         if direction == 1 or direction == 3:
             self.axis = "y"
         else:
-            self.axis = "x"
-            
+            self.axis = "x"            
      
     def update(self):
         if self.axis == "x":
@@ -288,7 +287,6 @@ class GameState():
         self.prev_level = 0
         self.is_game_completed = False
         self.menu_player = MenuAnim("idle.jpg",300,300,320,320)
-        self.ku, self.kd, self.kr, self.kl = 0,0,0,0
 
     def update_state(self):
         if self.level != self.prev_level:
@@ -323,7 +321,7 @@ class GameState():
                 self.done = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.state = "main_game"
-                
+
     def main_game(self):  
         # -- User input and controls
         for event in pygame.event.get():
@@ -416,7 +414,7 @@ def setup(game_map):
     bullet_group = pygame.sprite.Group()
 
     enemy_count = 0
-    while enemy_count < 4:
+    while enemy_count < 6:
         i = random.randint(0,24)
         j = random.randint(0,24)
         if game_map[j][i] == ' ':
