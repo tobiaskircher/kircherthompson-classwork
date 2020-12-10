@@ -2,16 +2,18 @@
 ##1. pip install --upgrade firebase-admin
 ##2. pythonleader-firebase... .json is in the same folder (certificate)
 
+#Imports
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
 
-# Use a service account
+#Use a service account
 cred = credentials.Certificate('pythonleader-firebase-adminsdk-uvfgz-ff429c601d.json')
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
+#u' ' ==> unicode string
 users_ref = db.collection(u'leaderboard')
 
 def update_leaderboard():
@@ -20,6 +22,7 @@ def update_leaderboard():
     leaderboard = {}
 
     for doc in docs:
+        #f' ' ==> literal string
         #print(f'{doc.id} => {doc.to_dict()}')
         user_dic = doc.to_dict()
         leaderboard[doc.id] = user_dic["score"]
@@ -46,6 +49,13 @@ while running:
 
         if option == 1:
             sorted_leaderboard = {k: v for k, v in sorted(leaderboard.items(), key=lambda item: item[1], reverse=True)}
+            #Explaination:
+            #key: value for key and value in the sorted dictionary
+            #sorted(iterable, key, reverse)
+            #key is the comparision key from each item in the iterable
+            #in this case we want to compare scores, the value: item[1]
+            #lambda is just an inline function
+            
             print("LEADERBOARD:\n")
             count = 0
             for i in sorted_leaderboard:
