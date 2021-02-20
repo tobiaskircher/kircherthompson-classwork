@@ -50,8 +50,7 @@ def drawGrid(frame):
 
     for x in columns:
         for y in rows:
-
-            region = frame[x:x+rectWidth, y-rectWidth:y]
+            region = frame[y:y+rectWidth, x:x+rectWidth]
             mean = cv.mean(region)
             rgb = [int(mean[0]),int(mean[1]),int(mean[2])]
 
