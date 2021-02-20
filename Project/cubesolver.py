@@ -1,6 +1,6 @@
 import cv2 as cv
 
-WHITE = (255,255,255)
+BLACK = (0,0,0)
 capture = cv.VideoCapture(0)
 
 if not capture.isOpened():
@@ -10,8 +10,9 @@ if not capture.isOpened():
 else:
     ret, frame = capture.read()
     dimensions = frame.shape
-    width = dimensions[0]
-    height = dimensions[1]
+    print(dimensions)
+    height = dimensions[0]
+    width = dimensions[1]
     centre = [width//2, height//2]
 
 #Colour Ranges
@@ -50,17 +51,19 @@ def drawGrid(frame):
 
     for x in columns:
         for y in rows:
-            cv.rectangle(frame,(x,y),(x+rectWidth,y+rectWidth), WHITE,1)
 
-            #region = frame[x:x+rectWidth, y:y+rectWidth]
-            #mean = cv.mean(region)
-            #print(mean)
+            region = frame[x:x+rectWidth, y-rectWidth:y]
+            mean = cv.mean(region)
+            rgb = [int(mean[0]),int(mean[1]),int(mean[2])]
 
-    region = frame[centre[0]:centre[0]+rectWidth, centre[1]:centre[1]+rectWidth]
-    mean = cv.mean(region)
-    rgb = [int(mean[0]),int(mean[1]),int(mean[2])]
-    #print(rgb)
-    print(getColour(rgb))
+            rectColour = BLACK
+            get_colour = getColour(rgb)
+            
+            if get_colour != "none":
+                rectColour = rgb
+
+            cv.line(frame,(0,0),(centre[0],centre[1]),3)
+            cv.rectangle(frame,(x,y),(x+rectWidth,y+rectWidth), rectColour,1)
 
     
 while True:
