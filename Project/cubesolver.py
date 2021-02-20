@@ -13,7 +13,23 @@ else:
     width = dimensions[0]
     height = dimensions[1]
     centre = [width//2, height//2]
-    
+
+#Colour Ranges
+#colour = [[r_min,r_max],[g_min,g_max],[b_min,b_max], "colour_name"]
+blue = [[190,210],[155,165],[90,100],"blue"]
+colours = [blue]
+
+def getColour(rgb_value):
+    return_value = "none"
+    for colour in colours:
+        if colour[0][0] <= rgb_value[0] <= colour[0][1]:
+            if colour[1][0] <= rgb_value[1] <= colour[1][1]:
+                if colour[2][0] <= rgb_value[2] <= colour[2][1]:
+                    return_value = colour[3]
+                    break
+    return return_value
+
+
 def drawGrid(frame):
     rectWidth = 70
     halfRectWidth = rectWidth // 2
@@ -38,7 +54,8 @@ def drawGrid(frame):
     region = frame[centre[0]:centre[0]+rectWidth, centre[1]:centre[1]+rectWidth]
     mean = cv.mean(region)
     rgb = [int(mean[0]),int(mean[1]),int(mean[2])]
-    print(rgb)
+    #print(rgb)
+    print(getColour(rgb))
 
     
 while True:
