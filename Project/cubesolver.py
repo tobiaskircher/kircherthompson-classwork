@@ -10,7 +10,6 @@ if not capture.isOpened():
 else:
     ret, frame = capture.read()
     dimensions = frame.shape
-    print(dimensions)
     height = dimensions[0]
     width = dimensions[1]
     centre = [width//2, height//2]
@@ -41,13 +40,13 @@ def drawGrid(frame):
     halfRectWidth = rectWidth // 2
     gap = 15
     
-    rows = [centre[0] - halfRectWidth - gap - rectWidth,
-         centre[0] - halfRectWidth,
-         centre[0] + halfRectWidth + gap]
-
-    columns = [centre[1] - halfRectWidth - gap - rectWidth,
+    rows = [centre[1] - halfRectWidth - gap - rectWidth,
          centre[1] - halfRectWidth,
          centre[1] + halfRectWidth + gap]
+
+    columns = [centre[0] - halfRectWidth - gap - rectWidth,
+         centre[0] - halfRectWidth,
+         centre[0] + halfRectWidth + gap]
 
     for x in columns:
         for y in rows:
@@ -62,7 +61,6 @@ def drawGrid(frame):
             if get_colour != "none":
                 rectColour = rgb
 
-            cv.line(frame,(0,0),(centre[0],centre[1]),3)
             cv.rectangle(frame,(x,y),(x+rectWidth,y+rectWidth), rectColour,1)
 
     
