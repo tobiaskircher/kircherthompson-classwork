@@ -31,6 +31,15 @@ def drawGrid(frame):
         for y in rows:
             cv.rectangle(frame,(x,y),(x+rectWidth,y+rectWidth), WHITE,1)
 
+            #region = frame[x:x+rectWidth, y:y+rectWidth]
+            #mean = cv.mean(region)
+            #print(mean)
+
+    region = frame[centre[0]:centre[0]+rectWidth, centre[1]:centre[1]+rectWidth]
+    mean = cv.mean(region)
+    rgb = [int(mean[0]),int(mean[1]),int(mean[2])]
+    print(rgb)
+
     
 while True:
     ret, frame = capture.read()
