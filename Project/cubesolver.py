@@ -7,6 +7,15 @@ if not capture.isOpened():
     print("Unable To Open Webcam.")
     exit()
 
+else:
+    ret, frame = capture.read()
+    dimensions = frame.shape
+    width = dimensions[0]
+    height = dimensions[1]
+    print("Dimensions: ", dimensions)
+    print("Height: ", height)
+    print("Width: ", width)
+    
 while True:
     ret, frame = capture.read()
 
