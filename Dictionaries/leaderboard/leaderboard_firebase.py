@@ -66,14 +66,17 @@ while running:
             name = input('Name: ').lower()
             try:
                 score = int(input('Score: '))
+                
+                if not name in leaderboard or leaderboard[name] < score:
+                    doc_ref = db.collection(u'leaderboard').document(name)
+                    doc_ref.set({
+                        u'score': score,
+                    })
+                
             except:
                 print("Invalid Input.")
 
-            if not name in leaderboard or leaderboard[name] < score:
-                doc_ref = db.collection(u'leaderboard').document(name)
-                doc_ref.set({
-                    u'score': score,
-                })
+            
 
         elif option == 3:    
             name = input('Name: ').lower()
