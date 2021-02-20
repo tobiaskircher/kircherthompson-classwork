@@ -44,6 +44,8 @@ def drawGrid(frame):
 while True:
     ret, frame = capture.read()
 
+    frame = cv.flip(frame,1)
+
     drawGrid(frame)
     
     cv.imshow("Cube Solver", frame)
