@@ -16,8 +16,13 @@ else:
 
 #Colour Ranges
 #colour = [[r_min,r_max],[g_min,g_max],[b_min,b_max], "colour_name"]
-blue = [[190,210],[155,165],[90,100],"blue"]
-colours = [blue]
+blue = [[180,220],[145,175],[80,110],"blue"]
+orange = [[85,115],[135,165],[205,235],"orange"]
+green = [[130,160],[170,200],[105,135],"green"]
+red = [[125,155],[100,130],[200,230],"red"]
+white = [[160,205],[165,205],[160,200],"white"]
+yellow = [[100,130],[175,205],[160,200],"yellow"]
+colours = [blue, orange, green, red, white, yellow]
 
 def getColour(rgb_value):
     return_value = "none"
