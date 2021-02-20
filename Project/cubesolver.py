@@ -9,6 +9,7 @@ while True:
     ret, frame = capture.read()
     
     cv.imshow("Cube Solver", frame)
+    #Cannot add an icon
 
     if cv.waitKey(1) == 27:
         break
