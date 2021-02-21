@@ -1,6 +1,8 @@
 import cv2 as cv
 
-BLACK = (0,0,0)
+font = cv.FONT_HERSHEY_SIMPLEX
+PUREBLACK = (0,0,0)
+PUREWHITE = (255,255,255)
 capture = cv.VideoCapture(0)
 
 if not capture.isOpened():
@@ -36,9 +38,9 @@ def getColour(rgb_value):
 
 
 def drawGrid(frame):
-    rectWidth = 70
+    rectWidth = 50
     halfRectWidth = rectWidth // 2
-    gap = 15
+    gap = 30
     
     rows = [centre[1] - halfRectWidth - gap - rectWidth,
          centre[1] - halfRectWidth,
@@ -50,17 +52,19 @@ def drawGrid(frame):
 
     for x in columns:
         for y in rows:
-            region = frame[y:y+rectWidth, x:x+rectWidth] #
+            
+            region = frame[y:y+rectWidth, x:x+rectWidth] 
             mean = cv.mean(region)
             rgb = [int(mean[0]),int(mean[1]),int(mean[2])]
 
-            rectColour = BLACK
+            rectColour = PUREBLACK
             get_colour = getColour(rgb)
             
             if get_colour != "none":
                 rectColour = rgb
 
             cv.rectangle(frame,(x,y),(x+rectWidth,y+rectWidth), rectColour,1)
+            cv.putText(frame,get_colour,(x,y), font, 0.5,PUREWHITE,cv.LINE_4)
 
     
 while True:
