@@ -64,14 +64,15 @@ def drawGrid(frame):
                 rectColour = rgb
 
             cv.rectangle(frame,(x,y),(x+rectWidth,y+rectWidth), rectColour,1)
-            cv.putText(frame,get_colour,(x,y), font, 0.5,PUREWHITE,cv.LINE_4)
+            if x == columns[0]:
+                cv.putText(frame,''.join(str(rgb)),(x,y), font, 0.5,PUREWHITE,cv.LINE_4)
 
     
 while True:
     ret, frame = capture.read()
 
     frame = cv.flip(frame,1)
-
+    
     drawGrid(frame)
     
     cv.imshow("Cube Solver", frame)
