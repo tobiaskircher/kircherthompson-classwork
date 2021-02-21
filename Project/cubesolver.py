@@ -51,8 +51,8 @@ def scanFace(frame):
          centre[0] - halfRectWidth,
          centre[0] + halfRectWidth + gap]
 
-    for x in columns:
-        for y in rows:
+    for y in rows:
+        for x in columns:
             
             region = frame[y:y+rectWidth, x:x+rectWidth] 
             mean = cv.mean(region)
@@ -69,19 +69,28 @@ def scanFace(frame):
             
             cv.putText(frame,get_colour,(x,y), font, 1,PUREWHITE,cv.LINE_4)
 
+    return face
+
     
 while True:
     ret, frame = capture.read()
 
     frame = cv.flip(frame,1)
     
-    scanFace(frame)
+    face = scanFace(frame)
     
     cv.imshow("Cube Solver", frame)
 
-    if cv.waitKey(1) == 27:
-        break
+    key = cv.waitKey(1)
 
+    if key == 27:
+        break
+    if key == 32:
+        print(face[0:3])
+        print(face[3:6])
+        print(face[6:9])
+
+        
 capture.release()
 cv.destroyAllWindows()
 
